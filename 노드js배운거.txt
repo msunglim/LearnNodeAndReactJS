@@ -44,11 +44,54 @@ const model = mongoose.model('jsName', schemaName)
 module.experts = {jsName}
 
 git init으로 git공간을 만들어주자. 그 후 add가능
+git add . 한칸띄고 쩜을 찍는게 포인트
 git에 올릴때, 몽고나 express는 안올려도된다. 그래서 gitignore이라는 파일을 만들어 거기서 올리지안아도될 파일을 저격한다. 만약 이거하기전에 git에 올렸다면, git rm --cached 지울거 -r 로 지워주자.
 
 이거없이 git status해야 깔끔하다.
-그후 git commit -m "업로디드" 까지해야 저장소에 올라감.
+그후 git commit -m "아무 메세지를 입력하세용"까지해야 저장소에 올라감.
 
+여기까지는 git을 이용해 local repository에 올린거임 그걸 github에 올릴려면
+일단 SSH(security shell)이 있어야함.
+
+그럼 git bash를 켜고 코드를 쳐주자. 그리고 ssh background도 시작해주자.
+이러고 ls -s ~/.ssh해보면 id_rsa랑 id_rsa.pub이 있는데, pubblic이고 안붙은건 private임
+이거를 또 ssh-agent에 추가해줘야한다. ssh-add ~/.ssh/id_rsa 해주면됨.
+그리고 pub인거를 github에 등록해줘야함. clip < ~/.ssh/id_rsa.pub해줌
+이러면 이걸 복사해주는데 github설정에 ssh에 드가서 붙여넣기해주면됨.
+
+다했으면 github에서 new reposityory만듦.
+그리고 우리 저번에 init했으니까 push만해주면됨.
+2번째 옵션에 3줄짜리코드 있을거야 그거복사.
+git remote add origin https://github.com/msunglim/LearnNodeAndReactJS.git
+git branch -M main
+git push -u origin main
+이러면 local이랑 github remote랑 연결이됨. 무슨말이냐면 로컬에있는 파일들이 깃헙에 올라간다는거임.
+
+클라이언트에서 서버로 회원가입기능을 만들어보자.
+중간에 body parser dependency가 필요하대. 클라와 서버간에 꼽사리끼는거지
+npm install body-parser --save 해주자.
+
+클라이언트가 만들어진게 없어서 postman이라는걸 다운받아야한단다..
+아 클라가없다는게.. frontend로 만들어논게없자나.. html이없다.. javscript도안했으니까..
+
+postman에서 그걸대신해줄수있음. 새로운 workspace만들고 새로운걸추가해
+post로 우리는 하고있느니까 post고르고 body는 raw json해줘
+그리고 json형식으로 값을 만들어준다음 send를 누르면 됨!
+{"name":"Name",
+"email":"email@gmail.com" 
+} 이런식으로하고 send를 누르면 완료!
+
+노드몬이라는게있는데 얘를 깔면 새로운변화를 주고 서버를 닫고 다시열필요없이
+변화를 주면 자동으로인지해서 반영된다고한다.
+npm install nodemon --save-dev로 설치 dev는 개발자모드라는거임. local에만 반영을하겠다. 배포한다음에는 손대지않겟다 이 말인듯.
+대신 이런 기능할거면 새로운 script를 만들어줘서 이걸로 실행해줘야함.
+scripts에 "nodeStart": "nodemon index.js" 이렇게해봐.
+
+주소를 깃헙에올리면 다른놈들이 그거 쓸 수 있으니, 그거는 깃헙에 안올려야함
+그래서 config폴더에 dev.js를 만들어 로컬에서 관리할 수 있게할 수 있음
+그래서 index에서는 dev.js 의 variable을 이용하고 github에서는 gitignore덕분에 dev는 올리지않아도됨.
+
+이걸 외부에서도 할 수 있는데 (production) heroku라는사이트에서 값을 저장하고 그걸 불러오게할 수도 있나봄.
 
 
 12:53 PM 12/20/2021 index.js
