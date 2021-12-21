@@ -1,0 +1,70 @@
+2:32 PM 12/21/2021
+몽고db 가입후 free로 cluster 생성. 한국은 공짜서버가없으니 인도네이시아걸로;;
+그리고 url 복사후 index.js에 붙여야댐
+mongoose 다운받을라면 npm install mongoose --save해야함 그래서 했음.
+이거하면 package.json에 몽구스가 추가되어있음.
+
+*몽구스연결하기
+index.js에서 const mongoose = require('mongoose')
+mongoose.connect('<password>라고 적힌곳에 비밀번호를 적어주기!! 괄호까지지워서 id:password이런 폼으로 적어줘야함아까그 url',{useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify:false}).then(()=>console.log('연결됨').catch(err =>console.log(err))
+			연결완료		에러가있다면 잡아주기
+
+몽구스 id: Moungsung pw:msung1
+
+{useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false }
+이거는 검색결과 더이상 지원하지않고 기본적으로 이렇게 세팅되었다고 상정한데.
+그래서 이거 붙이면 오류남.
+
+앱이 먼저 실행되고 서버에 접속됨.
+
+모델은 class같은거고 스키마는 거안에있는 값같은거인듯
+const schemaName = mongoose.Schema({
+const variableName: {
+	type: String, 
+	maxlength: 50,
+	trim: true, //String에서 스페이스 지워짐
+	unique:1 //한가지 값만 존재할 수 있다. 한 db에
+},
+anotherVariableName:{ //유저의 유형을 이런식으로 관리할 수 있다. 1이면뭐 2면뭐..
+	type:Number,
+	default:0 //기본값으로는 0이다 정의되지않으면.
+},
+image: String, //그냥 이렇게 해도된다.
+token: {             
+	type:String //유효성관리한다고함.. 뭘까
+},
+tokenExp:{
+	type:Number //토큰의 유효기간..
+}
+})
+
+const model = mongoose.model('jsName', schemaName)
+
+//모델을 다른 파일에서 쓸 수 있게
+module.experts = {jsName}
+
+git init으로 git공간을 만들어주자. 그 후 add가능
+git에 올릴때, 몽고나 express는 안올려도된다. 그래서 gitignore이라는 파일을 만들어 거기서 올리지안아도될 파일을 저격한다. 만약 이거하기전에 git에 올렸다면, git rm --cached 지울거 -r 로 지워주자.
+
+이거없이 git status해야 깔끔하다.
+그후 git commit -m "업로디드" 까지해야 저장소에 올라감.
+
+
+
+12:53 PM 12/20/2021 index.js
+Node js 폴더를 만들고 거기서 npm init을 해야됨 그럼 package가 생성됨.
+
+index.js 가 벡엔드 시작점
+
+visual studio에서 terminal은 콘솔이다. quick launch에서 (control q) console검색후
+express를 받기위해선 npm install express --save를 치면된다.
+
+run은 console에서 npm run scriptName
+
+*console에서 값출력하고싶으면 '이 아니라 `로해야됨
+ex) (port, () => console.log(`print ${port}`))
+
+이걸 실행하면 서버가 열리나봐. 그래서 localhost:port숫자하면 드가짐. 
+서버를 죽이는건 컨트롤 C
+*웹에서 프린트하는건 그냥 js에서 document.write맹키로하는거는 res.send('이렇게프린트합니다') 
+
