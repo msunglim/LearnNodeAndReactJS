@@ -1,3 +1,100 @@
+10:26 AM 12/23/2021
+route라고하는게 post나 get이런거 인거같다.
+schema.post('endpoint', (req,res))이런거.
+로그인 기능 1. 이메일이 db에있는지 확인 2. 비밀번호가 일치하는지 확인 3. 일치한다면 토큰생성
+
+1. modelName.findOne기능사용  {찾을거: req.body.찾을거}, (err,userInfo)
+	userInfo가 db에 없다면 return res.json({  loginSuccess:false, message:"해당유저없음"})
+2.있다면 비밀번호 대조
+	*method를 만드는법 userSchema.method.methodName = function( a,cb ){ }
+입력된 비번을 암호화해서 암호화된 비번과 비교
+	bcrypt.compare( a,this.password, function(err,isMatch){
+		//다르다면 if(err) return cb(err),
+		//같다면 cb(null, isMatch)
+		})
+3. 저기서 다르면 isMatch를 return하지않았기때문에 값이없을것이다. 
+	if(!isMatch) return res.json({loginSuccess:false})
+	//일치한다면 토큰생성하기
+	User model에서 function을 만들고 index에서 사용하는 모습을보이고있따.
+	jsonwebtoken library가 필요하다. npm install jsonwebtoken --save
+
+토큰을 만든것을 쿠키에 저장할수있따. 다른곳도가능 localdevice든 머든. 근데여기선 쿠키다.
+또하나 쿠키에저장할떄 변환해줄 cookie-parser 다운 필요 . npm install cookie-parser
+
+보니까 뭐하나 install하면 app.use(사용한거())이렇게 해줘야하나봄.(index에서는그러네. model에선 안함)
+
+auth기능: 어떤 페이지는 로그인된사람만 이용할수있거나 어떤 사이트는 모두가이용할 수 있게하는기능. authentication이라고한다.
+서버에 decode된 userid에 맞는 토큰이있으면 true. 아니면 false!
+sever에서 토큰을 가져와 decode를 한다.
+1. auth 만들기.
+middleware이라는 폴더 아래 auth.js를 만든다.
+*팁 js안에있는게 다른곳에도 쓰이고싶다면 let variableName한뒤
+module.exports = {variableName}
+그걸 다른데서쓸떈 const {a} = require('./그게있는폴더/jsName')
+
+auth는 middleware인데 이거 끝나고는 next()해줘야 다음으로 넘어갈 수 있음.
+let token = req.cookies.x_auth에서 x_auth는 토큰생성할때 res.cookie("x_auth", user.token)이랬기때문임.
+
+몽고디비는 .. nodemonStart로 해도 변화를 못읽는다.. 서버를 다시켜야 돌아가넹..
+보통 어지간하면 저사람이 하는데로 하자. 거의 내가틀림ㅋㅋ
+
+로그아웃은
+토큰을 지워버리면 로그인이 풀린다고한다.
+실화임. 대신에 이거 postman으로 실험할때는 request새로만들어주면서해야됌!
+
+request -> body ->raw ->json. 로그아웃은 아무것도입력한하고 send만해도됨!
+
+리엑트.js를 배움으로써이제 client요소들도 만들수있겠다.
+저 위에 하던 node.js는 backend stuff고 react.js는 front end stuff.
+npx create-react-app .  꼭 쳐줘야댐
+
+npm: 마지막에 -g를 붙이면 global하게 받고 없으면 local로 받아짐.  global은 프로젝트밖의 컴퓨터에 다운받겠따는거임;;
+
+npx로 npm -g로 굳이안받고 node registry에 있는걸 그냥 가져와서 사용할 수 있음/ 최신화/용량절감의 효과가 있다.
+
+
+11:38 AM 12/22/2021
+몽고db에서는 browse collection으로 저장된 db를 볼 수 있다.
+그러면 비밀번호도 입력된 그대로 저장되는데 그거를 암호화하기위해 bcrypt를 쓴다.
+npm install bcrypt --save로 설치
+register route로 가서 user.save하기전에 비밀번호를 암호화할 필요가 있음. 몽구스에 그런기능이있다.
+User.js (유저 모델이라함) userSchema에 접근한뒤,
+ userSchema.pre('save', function(next){
+	//여기서 비밀번호를 암호화하는 과정을 거침
+ next()})해주면 유저모델에 유저정보를 저장하기전에 function을 한다는소리임. 
+salt를 사용해서 비밀번호를 암호화해야함. saltRounds는 salt가 몇글자인지..
+그래서 saltRounds = 10 해놓고 그 걸로 salt를 만듬. 
+	//비번이 바뀔때만 암호화하고 아이디나 이메일바꾸는건 암호화하지않아도됨.	
+	if(user.isModified('password'){
+
+	bcrypt.genSalt(SaltRounds, function(err,salt){
+		if(err) return next(err)
+				//hash는 암호화된 비번
+		bcrypt.hash(user.password ,salt,function(err, hash){
+			if(err) return next(err)
+			//암호화된 비번생성성공
+			user.password = hash
+			next()
+	
+			} )
+
+		}
+	}
+
+1. require bcrypt 
+2. saltround 생성
+3. userSchema.pre('대상function', function(next){
+	3-1 암호화할대상이 수정되었을경우에만 하도록
+	if(user.isModified('암호화할대상'){
+	대상function하기전에할 내용
+	bcrypt.genSalt(saltround, function(err, salt){
+		4.암호화
+		bcrypt.hash(user.암호화할대상, salt, function(err,hash){
+			user.암호화할대상 = hash
+			next
+	}
+	
+
 2:32 PM 12/21/2021
 몽고db 가입후 free로 cluster 생성. 한국은 공짜서버가없으니 인도네이시아걸로;;
 그리고 url 복사후 index.js에 붙여야댐

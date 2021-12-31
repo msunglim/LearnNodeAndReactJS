@@ -1,0 +1,244 @@
+
+리엑트.js를 배움으로써이제 client요소들도 만들수있겠다.
+저 위에 하던 node.js는 backend stuff고 react.js는 front end stuff.
+npx create-react-app .  꼭 쳐줘야댐
+
+npm: 마지막에 -g를 붙이면 global하게 받고 없으면 local로 받아짐.  global은 프로젝트밖의 컴퓨터에 다운받겠따는거임;;
+
+npx로 npm -g로 굳이안받고 node registry에 있는걸 그냥 가져와서 사용할 수 있음/ 최신화/용량절감의 효과가 있다.
+
+client 폴더로가서 npm run start는 똑같다.
+index js에보면 ReactDom.render( <React.StrictMode> <App/> </React.StrictMode>에서
+
+<App/>은 App.js를 불러온다는말임. 이부분은 프론트앤드적인 모습인데 저걸 지우고
+html 코드 비슷한거 넣어도됨 ex) <div>안녕</div>
+
+그럼 App.js에 가보면 기본적으로 세팅되어있는게있는데 완전 html에서 html body만날린거임ㅋㅋ\
+
+왜 저렇게 되냐면 뒤에 document.getElementById("root")때문임. 
+public 폴더에 index.html보면 body테그안에 div의 id가 root으로 설정되있기때문에 선택된 콘텐츠가 화면을 꽉채울수잇는거임.
+이 위의 과정을 랜더링이라한다.
+
+이미지파일을 넣을때 src폴더에 넣어야 webpack이 관리를 해준다.
+
+src폴더안에 별의별 폴더를 만들어준다.
+App.test.js와 logo.svg, App.css는 지워줬다. 그냥 아예삭제임
+만든폴더: actions, reducers, utils , hoc, components->views-> Footer, LandingPage,LoginPage,NavBar, RegisterPage <-각폴더안에 폴더 명과 일치하는 js파일을 만들어준다.
+
+그리고 
+import React from 'react'
+
+function 폴더명(){
+  return (
+    <div>
+      폴더명
+    </div>
+  )
+}
+
+export default 폴더명 이런식으로 입력해주었다..
+
+또 다운을 한다..
+npm install react-router-dom --save
+
+저게 버전업글이됐다고한다. 그래서 Switch는 Routes 로 쓰인다.
+
+Routes안에 Route path = "" element ={  } 이게있는데 아마 해석하기로는
+route 주소가 ~면, element는 ㅁㅁ다 라는 의미인거같다.
+Switch (address) case 1: ㅇㅇ~ 이런거 맹키로.
+
+여기서 링크는 href가 아니라 <Link to ="/login">여기를누르면로그인페이지로이동</Link>이렇게쓴다.
+exact은 나중에 비슷한 url을 가진곳으로 이동하는걸 방지하기위해 꼭 붙여주는 습관을 들인다.
+Routh exact path!
+
+이제 클라이언트가 있어서 postman을 쓸 이유가사라짐.
+대신에 새로운걸 또 다운받아야함.
+npm install axios --save 
+이것은 jQuery사용간에 ajax같은 개념이라고함..
+
+import React, {useEffect} from 'react' 이런식으로 import하고 
+
+  useEffect(()=>{
+    axios.get('/api/hello')
+    .then(response=>console.log(response.data))},[])
+    
+  })
+이런식으로 landingpage에 도달하자마자 시작하게해준다. 그리고 get은 server쪽 index.js에 방문하여
+app.get('/api/hello',(req,res)=>{
+  res.send("Hello Client!")
+})
+이런식으로 response 해준다.  그것을 저위에 useEffect부분에 then(response)로 받는거임.
+
+서로 port가 다르면 (3000, 5000이런거) 서로 받을 수 있게 해줘야한다. corps 정책 땜에(보안상)
+
+여기서는 proxy를 쓴다..
+npm install http-proxy-middleware --save해줘야함.
+
+src에 setupProxy.js파일을 만들어야한다.
+개미쳤다. 아니 뭐 최신업데이트되면 코드생긴거부터 바꾸나 샹너매거 어떻게찾노 시부래
+그래도 에러는 고쳤긴햇는데.. 최신화된거를 찾는법부터 알아야하지않것나
+*참고로 몽고디비는 손으로키는게아니라 npm run start해야 켜지네. 서버폴더에서.    몽고디비홈페이지에서 connect하는게아니라....
+
+서버랑 클라이언트 같이 켜는법
+당연히 뭐 다운받아야겠죠?
+server쪽 폴더에서
+npm install concurrently --save
+후에 
+package.json에 dev라는 걸만들어봐
+그리고 그안에 넣을코드를 적어
+ex) "dev": "concurrently \"npm run start\" \"npm run start --prefix client\""
+여기서 prefix client하면 client안에있는 package.json에 있는 start script가 실행됨
+
+그리고 콘솔에서 npm run start하면됨
+
+*css는 framework를써 개발시간 단축과 더 고퀄의 디자인을 이용할 수 있는데 이사람은 ant design이란걸쓴다.
+react.js를 위한 css인데 역시 다운이필요하다.
+npm install antd --save를 client 에서 해준다.
+그리고 client src에있는 index.js에 import 'antd/dist/antd.css'; 해준다.
+  
+
+redux를 사용하면 뭔가를 최신화할때 직속으로 업데이트가 가능하다고 한다. 이거 없이는 자식부터 부모끝까지타고타고 업데이트해야하는 귀찮은 점이있따고한다.
+
+다운받아야함
+npm install redux react-redux redux-promise redux-thunk --save 한번에 여러 디팬던시 다운!
+
+index.js에 import {Provider} from 'react-redux'
+
+이렇게 해준다.
+import {Provider} from 'react-redux'
+import {applyMiddleware,createStore} from 'redux'
+import promiseMiddleware from 'redux-promise'
+import ReduxThunk from 'redux-thunk'
+
+const createStoreWithMiddleware = applyMiddleware(promiseMiddleware,ReduxThunk)(createStore)
+ReactDOM.render(
+  <Provider
+    store = {createStoreWithMiddleware()}
+
+  >
+    <App />
+  </Provider>,
+  document.getElementById('root')
+);
+
+reducer 폴더에 index.js라는 파일을 만든다.
+여기서 머하는거냐면 기능이 많아짐에 따라 담당 reducer가 생길 수 있는데, 
+그 모든 reducer을 rootReducer에 모아주는 역할을한다.
+그리고 
+import {combineReducers} from 'redux'
+// import user from './user_reducer' 이걸위해 reducer폴더 내에 user_reducer.js이라는 파일을 만든다.
+이것은 지금 로그인/회원가입기능 전담
+
+const rootReducer = combineReducers({
+  //user
+})
+
+export default rootReducer
+이렇게 해주면 원래 index.js에 돌아와서 
+import Reducer from './_reducers'해주고
+   store = {createStoreWithMiddleware(Reducer,window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())} 이렇게 넣어준다.\
+
+솔직히 먼말인지 모르겟다. redux extension크롬에 깔았따.
+
+그리고 
+window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()을 넣어준다. (위에 이미 넣어진 상태)
+
+react 에서는 function component가 더 빠르고 간결했는데 제약점이있었음 근데 hook이나와서 제약이
+풀렸음. 그래서 다들 훅을 쓰면서 function component를 씀!
+
+import React, {useState} from 'react'
+input의 값을 바꿀때 state을 만들어줘야한다. 
+const [Email, setEmail] = useState("")
+const onEmailHandler = (event) =>{
+	setEmail(event.currentTarget.value)
+}
+이렇게해주고
+input tag안에 value = {Email} onChange = {onEmailHandler}
+
+버튼에도 이런거해주는데 여기서는 
+    event.preventDefault()
+    이걸해줘야 버튼눌렀을때 아래의 일을 해줄 수 있음. 안하면 새로고침됨
+
+useDispatch를 redux에서 import한다.
+import {useDispatch} from 'react-redux'
+
+reducer폴더에 있는 user_reducer에 state={}이다. 그것을 ...state하면 내용을 그대로 복사한다는뜻이다. 여기서 state은 이전state에 action을 해서 nextState로 만드는게 목표인것이다..
+
+아오 저 redux 시발 버전업데이트하면 글생긴거부터 바꾸나 시발이;;
+props.histroy.push("/")가 더 이상안되고
+그냥 import { useNavigate } from 'react-router-dom';
+let navigate = useNavigate();
+    navigate('/');
+이렇게해야되네;;
+
+지금 종합해보면, registerPage에서 dispatch이후에 if문에서 response.payload.success에서
+이 success는 server폴더에잇는 index.js에 post안에있는 /api/users/register 안에있는 return res.status(200).json({ success:true})이다.
+
+user_reducer에서는 register:action.payload라고 정하고있지만.. 이런건 소용없나보다. 
+왜 헷갈리게 저런 명칭으로 썻을까?
+
+로그아웃은 쉽다.
+axios.get(`api/users/logout`)이렇게해노면 
+server index.js에보면 이미 이 기능이 구현되어있기때문에 자동으로 된다.
+
+방문자 조건에 따라 페이지 제어하기
+
+ const NewLandingPage = Auth(LandingPage, null)
+ <Route path="/" element={<NewLandingPage />} /> 이런식으로도 쓸 수 있다.
+
+여기서 auth는 HOC폴더에있는건데
+export default function(SpecificComponent, option, adminRoute =  null){
+
+  function AuthenticationCheck(props){
+    const dispatch = useDispatch()
+
+    useEffect(()=>{
+      // Axios.get('/api/users/auth')
+      dispatch(auth()).then(response =>{
+        console.log(response)
+      })
+
+    }, [])
+
+    return (
+      <SpecificComponent />
+    )
+  }
+
+  return AuthenticationCheck
+
+}
+이렇게 생겼다.
+
+저위에서 <Route path="/" element={Auth(LandingPage, null)} />
+이렇게  쓰고 싶다면, auth.js에서 마지막 function return하는곳에서   return AuthenticationCheck()
+이렇게 해줘야한다.
+
+그리고 아예 function AuthenticationCheck(props)을 지우고 
+export default function(SpecificComponent, option, adminRoute =  null){
+
+
+    const dispatch = useDispatch()
+
+    useEffect(()=>{
+      // Axios.get('/api/users/auth')
+      dispatch(auth()).then(response =>{
+        console.log(response)
+      })
+
+    }, [])
+
+    return (
+      <SpecificComponent />
+    )
+  }
+이런 식으로 운용해도 되는데, 뭔가 props를 쓸 수도잇으니까 저사람이 하는데로 하겠다.
+
+이것을 구현하는데 types,js, user_action, user_reducer, App, auth.js (hoc)를 건드렸다.
+
+보통보면 function 을 import할때는
+import {function} from 'react~~~' 이러캐하는듯
+object class같은거할때는 (자바에서 Math.)맹키로 이렇게쓰는거는 
+import Axios from 'axios' 이런식으로하대
+
+withRouter은 내 버전에서는 에러가 뜨지않아 설치하지않았음~! 
